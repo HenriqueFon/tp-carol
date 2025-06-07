@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Conversas não lidas</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            background: #f5f5f5;
+            font-family: Arial, sans-serif;
+        }
+        .conversa-card {
+            display: flex;
+            align-items: center;
+            background: #fff;
+            border-radius: 12px;
+            margin-bottom: 18px;
+            padding: 16px;
+            box-shadow: 0 2px 8px #0001;
+            position: relative;
+        }
+        .avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: #ddd;
+            margin-right: 18px;
+            flex-shrink: 0;
+        }
+        .conversa-info {
+            flex: 1;
+        }
+        .conversa-nome {
+            font-weight: bold;
+            margin-bottom: 6px;
+            color: #444;
+        }
+        .conversa-msg {
+            color: #888;
+            font-size: 15px;
+        }
+        .badge {
+            background: #eee;
+            color: #444;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 18px;
+            position: absolute;
+            right: 24px;
+            top: 50%;
+            transform: translateY(-50%);
+            border: 2px solid #ccc;
+        }
+        .abrir-chat-btn {
+            position: absolute;
+            right: 70px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #ff5757;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            padding: 6px 14px;
+            cursor: pointer;
+        }
+        h2 {
+            margin-bottom: 24px;
+            color: #222;
+        }
+        #conversasList {
+            list-style: none;
+            padding: 0;
+            max-width: 480px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+    <h2>Unread</h2>
+    <ul id="conversasList"></ul>
+
+    <script>
+        function getQueryParam(param) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(param);
+        }
+
+        const profissionalId = getQueryParam('profissionalId');
+        const conversasList = document.getElementById('conversasList');
+
+        console.log('Profissional:', profissionalId);
+        console.log('LocalStorage:', localStorage);
+
+        // Percorre todas as conversas salvas no localStorage
+        for (let key in localStorage) {
+            if (key.startsWith('chat_')) {
+                const partes = key.split('_');
+                // chat_profissionalId_usuarioId
+                if (partes[1] == profissionalId) {
+                    const mensagens = JSON.parse(localStorage.getItem(key));
+                    // Conta mensagens não lidas do usuário
+                    const naoLidas = mensagens ? mensagens.filter(msg => msg.remetente !== 'Profissional' && !msg.lida).length : 0;
+                    if (naoLidas > 0) {
+                        const usuarioId = partes[2];
+                        const ultimaMsg = mensagens && mensagens.length > 0 ? mensagens[mensagens.length - 1].texto : '';
+                        const li = document.createElement('li');
+                        li.innerHTML = `
+                            <div class="conversa-card">
+                                <div class="avatar"></div>
+                                <div class="conversa-info">
+                                    <div class="conversa-nome">Usuário ${usuarioId}</div>
+                                    <div class="conversa-msg">${ultimaMsg ? ultimaMsg.substring(0, 40) : ''}</div>
+                                </div>
+                                <button class="abrir-chat-btn" onclick="abrirChat('${profissionalId}', '${usuarioId}')">Abrir</button>
+                                <div class="badge">${naoLidas}</div>
+                            </div>
+                        `;
+                        conversasList.appendChild(li);
+                    }
+                }
+            }
+        }
+
+        function abrirChat(profissionalId, usuarioId) {
+            window.location.href = `chat.html?profissionalId=${profissionalId}&usuarioId=${usuarioId}`;
+        }
+
+        localStorage.setItem('chat_123_1', JSON.stringify([
+          { remetente: 'Usuário', texto: 'Olá, preciso de ajuda', lida: false }
+        ]));
+    </script>
+</body>
+</html>

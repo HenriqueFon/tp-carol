@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js" defer></script> 
+    <title>Cadastro de Profissionais</title>
+</head>
+<body>
+    <h1>Cadastro de Profissionais</h1>
+    <form id="form"> 
+        <label for="name">Nome Completo:</label>        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <link rel="stylesheet" href="style.css">
+            <script src="script.js" defer></script>
+             
+              
+            <title>Cadastro de Profissionais</title>
+        </head>
+        
+        <input type="text" id="name"  > 
+
+        <label for="email">Email:</label>
+        <input type="email" id="email" >
+
+        <label for="password">Senha:</label>
+        <input type="password" id="password"  >
+
+        <label for="job">Ocupação:</label>
+        <select name="job" id="job" > 
+        <option value="">Selecione</option> 
+        <option value="advogado">Advogado</option>
+        <option value="psicologo">Psicólogo</option>
+        <option value="ong">ONG</option>
+        <option value="assistente">Assistente Social</option>  
+        </select>
+
+        <label for="message">Descrição: </label>
+        <textarea type="message" id="message"></textarea>  
+        
+        <button type="submit">Cadastrar</button>
+    </form> 
+    
+    <script>
+        document.getElementById('form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const nomeProfissional = document.getElementById('name').value;
+            const emailProfissional = document.getElementById('email').value;
+            // Simule o ID do usuário que fez o contato (ajuste para pegar o real depois)
+            const usuarioContatoId = 1;
+            cadastrarProfissional(nomeProfissional, emailProfissional, usuarioContatoId);
+        });
+
+        function cadastrarProfissional(nomeProfissional, emailProfissional, usuarioContatoId) {
+            const profissionais = JSON.parse(localStorage.getItem('profissionais') || '[]');
+            const novoProfissional = {
+                id: Date.now(),
+                nome: nomeProfissional,
+                email: emailProfissional
+            };
+            profissionais.push(novoProfissional);
+            localStorage.setItem('profissionais', JSON.stringify(profissionais));
+
+            // Redireciona para a lista de conversas
+            window.location.href = `conversas.html?profissionalId=${novoProfissional.id}`;
+        }
+    </script>
+</body>
+</html>
